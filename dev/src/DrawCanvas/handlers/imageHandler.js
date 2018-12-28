@@ -6,6 +6,7 @@ const imageHandler = {};
 
 imageHandler.loadBackground = (canvasCtx, url, sizeCover = false) => {
     const img = new Image();
+    img.crossOrigin = "Anonymous";
     img.onload = function () {
         canvasCtx.drawImage(img, 0, 0);
     };
