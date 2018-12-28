@@ -10,7 +10,11 @@ const Tool = {
 
     onMouseUp() {
         throw new Error('onMouseUp must be implemented.');
-    }
+    },
+
+    resetState() {
+        this.state = null;
+    } 
 }
 
 export default Tool;
