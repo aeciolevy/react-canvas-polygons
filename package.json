@@ -10,6 +10,10 @@
     "type": "git",
     "url": "git+https://github.com/aeciolevy/react-canvas-polygons.git"
   },
+  "peerDependencies": {
+    "image-size": "^0.x",
+    "react": "16.x"
+  },
   "keywords": [
     "react",
     "canvas",
