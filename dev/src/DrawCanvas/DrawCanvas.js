@@ -19,7 +19,7 @@ class DrawCanvas extends React.PureComponent {
     }
 
     componentDidMount() {
-        this.canvas = this.refs.canvas;
+
         this.ctx = this.canvas.getContext('2d');
         this.tool = tools[this.props.tool];
         this.tool.ctx = this.ctx;
@@ -37,7 +37,7 @@ class DrawCanvas extends React.PureComponent {
         const { tool } = this.props;
         const newData = this.tool.onMouseUp(this.getCursorPosition(e));
         this.setState({ data: { ...this.state.data, [tool]: [ ...this.state.data[tool], newData]}}, () => {
-            this.props.onCompleteDraw(this.state.data);
+            this.props.onCompleteDraw && this.props.onCompleteDraw(this.state.data);
         });
     }
 
@@ -60,7 +60,7 @@ class DrawCanvas extends React.PureComponent {
 
         return(
             <React.Fragment>
-                <canvas ref="canvas" width={width} height={height} 
+                <canvas ref={canvas => this.canvas = canvas} width={width} height={height} 
                     style={{ border: '2px solid', color: 'black',
                         backgroundImage: `url(${imgSrc})`,
                         backgroundSize: 'cover'
@@ -100,6 +100,7 @@ DrawCanvas.defaultProps = {
     width: 300,
     height: 300,
     imgCover: false,
+    tool: 'Line'
 }
 
 export default DrawCanvas;
