@@ -5,15 +5,12 @@
   "main": "build/index.js",
   "scripts": {
     "dev": "watch 'npm run build' dev/src/DrawCanvas",
-    "build": "npx babel -w dev/src/DrawCanvas --out-dir build --presets=@babel/preset-react --plugins=@babel/proposal-class-properties",
+    "build": "npx babel --watch dev/src/DrawCanvas -d build --presets=@babel/preset-env,@babel/preset-react --plugins=@babel/plugin-proposal-class-properties",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/aeciolevy/react-canvas-polygons.git"
-  },
-  "peerDependencies": {
-    "react": "16.x"
   },
   "keywords": [
     "react",
@@ -37,6 +34,12 @@
     "@babel/plugin-transform-classes": "^7.2.2",
     "@babel/preset-env": "^7.2.3",
     "@babel/preset-react": "^7.0.0",
+    "babel-plugin-transform-react-remove-prop-types": "^0.4.21",
     "watch": "^1.0.2"
+  },
+  "dependencies": {
+    "prop-types": "15.6.2",
+    "react": "16.x",
+    "wrappy": "^1.0.2"
   }
 }
