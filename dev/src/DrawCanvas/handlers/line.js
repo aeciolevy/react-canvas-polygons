@@ -1,5 +1,5 @@
 import Tool from './tool';
-
+export const LINE = 'Line';
 const line = { ...Tool };
 
 line.onMouseDown = function onMouseDown(start) {
@@ -28,7 +28,9 @@ line.onMouseMove = function onMouseMove(position) {
 line.onMouseUp = function onMouseUp(position) {
     if (!this.state) return;
     this.onMouseMove(position);
+    this.data = [this.state.start, position];
     this.resetState();
+    return this.data;
 }
 
 export default line;

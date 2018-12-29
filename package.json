@@ -4,14 +4,18 @@
   "description": "Draw lines and polygons with canvas. Save and load path to canvas.",
   "main": "build/index.js",
   "scripts": {
+	"dev": "watch 'npm run build' src",
+	"build": "babel dev/src/DrawCanvas -d build",
     "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "babel": {
+	"presets": ["latest"]
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/aeciolevy/react-canvas-polygons.git"
   },
   "peerDependencies": {
-    "image-size": "^0.x",
     "react": "16.x"
   },
   "keywords": [
@@ -28,5 +32,9 @@
   "bugs": {
     "url": "https://github.com/aeciolevy/react-canvas-polygons/issues"
   },
-  "homepage": "https://github.com/aeciolevy/react-canvas-polygons#readme"
+  "homepage": "https://github.com/aeciolevy/react-canvas-polygons#readme",
+  "devDependencies": {
+    "babel-cli": "^6.26.0",
+    "babel-preset-latest": "^6.24.1"
+  }
 }

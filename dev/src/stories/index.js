@@ -23,5 +23,7 @@ storiesOf('Button', module)
 storiesOf('Canvas', module).add('Render Canvas', () => <DrawCanvas 
   height="240"
   width="300"  
+  tool="Line"
   imgSrc="https://ric-bucket.s3.amazonaws.com/device_5c05ee0cb669e165879e622a/sensorview.jpg"
+  onCompleteDraw={(data) => console.log(data)}
 /> )

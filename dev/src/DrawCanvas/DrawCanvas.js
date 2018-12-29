@@ -3,33 +3,42 @@ import type from 'prop-types';
 import imageHandler from './handlers/imageHandler';
 import canvasHandler from './handlers/canvasHandler';
 import Line from './handlers/line';
-import line from './handlers/line';
+
+const tools = {
+    ['Line']: Line,
+};
+
 
 class DrawCanvas extends React.PureComponent {
 
     state = {
+        data: {
+            Polygon: [],
+            Line: [],
+        }
     }
 
     componentDidMount() {
-        const { imgSrc } = this.props;
         this.canvas = this.refs.canvas;
         this.ctx = this.canvas.getContext('2d');
-        // if (imgSrc) {
-        //     // imageHandler.loadBackground(this.ctx, imgSrc);
-        // }
+        this.tool = tools[this.props.tool];
+        this.tool.ctx = this.ctx;
     }
 
     onMouseDown = (e) => {
-        Line.ctx = this.ctx;
-        Line.onMouseDown(this.getCursorPosition(e));
+        this.tool.onMouseDown(this.getCursorPosition(e));
     }
 
     onMouseMove = (e) => {
-        Line.onMouseMove(this.getCursorPosition(e))
+        this.tool.onMouseMove(this.getCursorPosition(e))
     }
 
     onMouseUp = (e) => {
-        Line.onMouseUp(this.getCursorPosition(e));
+        const { tool } = this.props;
+        const newData = this.tool.onMouseUp(this.getCursorPosition(e));
+        this.setState({ data: { ...this.state.data, [tool]: [ ...this.state.data[tool], newData]}}, () => {
+            this.props.onCompleteDraw(this.state.data);
+        });
     }
 
     getCursorPosition = (e) => {
