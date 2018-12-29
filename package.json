@@ -4,12 +4,14 @@
   "description": "Draw lines and polygons with canvas. Save and load path to canvas.",
   "main": "build/index.js",
   "scripts": {
-	"dev": "watch 'npm run build' src",
-	"build": "babel dev/src/DrawCanvas -d build",
+    "dev": "watch 'npm run build' src",
+    "build": "babel dev/src/DrawCanvas -d build",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "babel": {
-	"presets": ["latest"]
+    "presets": [
+      "latest"
+    ]
   },
   "repository": {
     "type": "git",
