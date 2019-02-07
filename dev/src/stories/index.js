@@ -37,7 +37,8 @@ storiesOf('Canvas', module)
         width="300"
         tool="Line"
         imgSrc="https://ric-bucket.s3.amazonaws.com/device_5c05ee0cb669e165879e622a/sensorview.jpg"
-        brushSize={state.value}
+        brushSize={Number(state.brush)}
+        color={state.color}
         onCompleteDraw={(data) => console.log(data)}
       />
     )} />

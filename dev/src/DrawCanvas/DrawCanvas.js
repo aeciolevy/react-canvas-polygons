@@ -27,8 +27,8 @@ class DrawCanvas extends React.PureComponent {
     }
 
     onMouseDown = (e) => {
-        const { brushSize } = this.props;
-        this.tool.onMouseDown(this.getCursorPosition(e), { brushSize });
+        const { brushSize, color, tool } = this.props;
+        this.tool.onMouseDown(this.getCursorPosition(e), { brushSize, color, tool });
     }
 
     onMouseMove = (e) => {
@@ -113,6 +113,10 @@ DrawCanvas.propTypes = {
      * BrushSize to draw
      */
     brushSize: type.number,
+    /**
+     * Color
+     */
+    color: type.string,
 }
 
 
@@ -121,6 +125,7 @@ DrawCanvas.defaultProps = {
     height: 300,
     imgCover: false,
     brushSize: 2,
+    color: 'black',
     tool: 'Line'
 }
 

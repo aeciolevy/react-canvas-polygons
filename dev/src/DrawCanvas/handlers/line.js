@@ -9,6 +9,7 @@ line.onMouseDown = function onMouseDown(start, options) {
     };
     this.imageData = this.ctx.getImageData(0, 0, this.ctx.canvas.width, this.ctx.canvas.height);
     this.ctx.lineWidth = options.brushSize;
+    this.ctx.strokeStyle = options.tool === 'Line' && options.color;
     return this;
 }
 
@@ -16,6 +17,9 @@ line.draw = function draw(position) {
     this.ctx.beginPath();
     this.ctx.moveTo(this.state.start.x, this.state.start.y);
     this.ctx.lineTo(position.x, position.y);
+    /*fill what we have.
+     *Context will close the subpath but without marking it as closed*/
+    this.ctx.fill();
     this.ctx.stroke();
     this.ctx.closePath();
 }
