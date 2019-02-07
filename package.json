@@ -6,7 +6,6 @@
   "scripts": {
     "dev": "watch 'npm run build' dev/src/DrawCanvas",
     "build": "npx babel --watch dev/src/DrawCanvas -d build --presets=@babel/preset-env,@babel/preset-react --plugins=@babel/plugin-proposal-class-properties",
-    "prepublish": "npm run build",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {

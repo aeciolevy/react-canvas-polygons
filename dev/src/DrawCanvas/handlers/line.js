@@ -2,12 +2,13 @@ import Tool from './tool';
 export const LINE = 'Line';
 const line = { ...Tool };
 
-line.onMouseDown = function onMouseDown(start) {
+line.onMouseDown = function onMouseDown(start, options) {
     this.state = {
         started: true,
         start,
     };
     this.imageData = this.ctx.getImageData(0, 0, this.ctx.canvas.width, this.ctx.canvas.height);
+    this.ctx.lineWidth = options.brushSize;
     return this;
 }
 
