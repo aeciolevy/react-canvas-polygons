@@ -23,7 +23,7 @@ export default class Input extends React.PureComponent {
                 <div>
                     <input type="color" name="color"
                         value={this.state.color} onChange={this.handleChange}/>
-                    <label for="color"> Color </label>
+                    <label htmlFor="color"> Color </label>
                 </div>
                 {this.props.render(this.state)}
             </React.Fragment>
