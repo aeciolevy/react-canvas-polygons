@@ -2,15 +2,19 @@ import React from 'react';
 import type from 'prop-types';
 import Line from './handlers/line';
 import Polygon from './handlers/polygon';
+import Rectangle from './handlers/rectangle';
+import canvasHandler from './handlers/canvasHandler';
 
 const tools = {
     'Line': Line,
     'Polygon': Polygon,
+    'Rectangle': Rectangle,
 };
 
 const INITIAL_STATE = {
-    Polygon: [],
+    Polygon: {},
     Line: [],
+    Rectangle: [],
 }
 
 class DrawCanvas extends React.PureComponent {
@@ -19,14 +23,26 @@ class DrawCanvas extends React.PureComponent {
         pastData: INITIAL_STATE,
         data: INITIAL_STATE,
         canvasData: [],
-        tool: 'Line'
+        tool: 'Line',
+        polygonId: canvasHandler.uuid(),
     }
 
     componentDidMount() {
         this.ctx = this.canvas.getContext('2d');
-        this.tool = tools[this.props.tool];
+        this.tool = tools[this.props.tool] || tools['Line'];
         this.tool.ctx = this.ctx;
-        this.tool.init();
+        this.setState({ data: {
+            ...this.state.data,
+            'Polygon': { [this.state.polygonId]: []}
+        } });
+    }
+
+    componentDidUpdate(prevProps) {
+        if (prevProps.tool !== this.props.tool) {
+            this.tool = tools[this.props.tool];
+            this.tool.ctx = this.ctx;
+            this.tool.resetState();
+        }
     }
 
     onMouseDown = (e) => {
@@ -39,6 +55,12 @@ class DrawCanvas extends React.PureComponent {
         this.tool.onMouseMove(this.getCursorPosition(e), (data, startPoint) => {
             const correctData = this.correctPolygon(data, startPoint);
             this.updateData(correctData);
+            this.setState({ polygonId: canvasHandler.uuid() }, (parameters) => {
+                this.setState({ data: {
+                    ...this.state.data,
+                    'Polygon': { ...this.state.data['Polygon'], [this.state.polygonId] : []}
+                }})
+            });
             this.tool.resetState();
         })
     }
@@ -57,26 +79,25 @@ class DrawCanvas extends React.PureComponent {
     }
 
     updateData = (data) => {
-        const { tool } = this.state;
+        const { polygonId } = this.state;
+        const { tool } = this.props;
         if (data) {
             this.setState({
                 pastData: { ...this.state.data },
                 data: {
                     ...this.state.data,
-                    [tool]: [...this.state.data[tool], data.data]
+                    [tool]: tool === 'Polygon' ?
+                    { ...this.state.data[tool],
+                        [polygonId]: [...this.state.data[tool][polygonId], data.data ]
+                    }
+                    :
+                    [...this.state.data[tool], data.data]
                 },
                 canvasData: [...this.state.canvasData, data.canvas],
             }, () => {
                 this.props.onCompleteDraw && this.props.onCompleteDraw(this.state.data);
             });
         }
-    }
-
-    onMouseLeave = () => {
-        // if (this.tool.state) {
-        //     this.tool.state.started = null;
-        // }
-        // this.undo();
     }
 
     getCursorPosition = (e) => {
@@ -95,82 +116,38 @@ class DrawCanvas extends React.PureComponent {
     }
 
     undo = () => {
-        let tempCanvasData = [...this.state.canvasData];
-        tempCanvasData.pop();
-        this.setState({
-            data: { ...this.state.pastData },
-            canvasData: [...tempCanvasData]
-        }, () => {
-            console.log('context undo: ', this.state.canvasData);
-            this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-            this.state.canvasData.forEach(el => {
-                const { tool } = el.options;
-                this.tool = tools[tool];
-                this.tool.draw(el.start, el.end, false, { options: el.options});
+        if (this.props.canUndo) {
+            let tempCanvasData = [...this.state.canvasData];
+            tempCanvasData.pop();
+            this.setState({
+                data: { ...this.state.pastData },
+                canvasData: [...tempCanvasData]
+            }, () => {
+                this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+                this.state.canvasData.forEach(el => {
+                    const { tool } = el.options;
+                    this.tool = tools[tool];
+                    this.tool.draw(el.start, el.end, false, { options: el.options});
+                });
             });
-        });
-    }
-
-    // TODO: This button should be dependency injection
-    handleButtonClick = (event) => {
-        event.stopPropagation();
-        const { name } = event.target;
-        this.setState({ tool: name }, () => {
-            this.tool = tools[this.state.tool]
-            this.tool.ctx = this.ctx;
-            this.tool.resetState();
-            console.log(this.tool);
-        });
-    }
-
-    onKeyUp = (event) => {
-        this.tool.onKeyUp(event, this.tool, (event) => {
-            if (event === 'Escape') {
-                this.undo();
-            }
-        });
+        }
     }
 
     render() {
-        const { width, height, imgSrc } = this.props;
+        const { width, height, imgSrc, canUndo } = this.props;
 
         return(
             <React.Fragment>
                 <canvas tabIndex="1"
                     ref={canvas => this.canvas = canvas} width={width} height={height}
-                    style={{ border: '2px solid', color: 'black',
+                    style={{ color: 'black',
                         backgroundImage: `url(${imgSrc})`,
                         backgroundSize: 'cover'
                     }}
                     onMouseDown={this.onMouseDown}
                     onMouseMove={this.onMouseMove}
                     onMouseUp={this.onMouseUp}
-                    onMouseLeave={this.onMouseLeave}
                 />
-                <div onClick={this.handleButtonClick}>
-                    <button name="Line"
-                        style={{ backgroundColor: this.state.tool === 'Line' && '#8080805c' || 'unset'}}>
-                        Line
-                    </button>
-                    <button name="Polygon"
-                        style={{ backgroundColor: this.state.tool === 'Polygon' && '#8080805c' || 'unset' }}
-                    >
-                        Polygon
-                    </button>
-                    <button name="Rect"
-                        style={{ backgroundColor: this.state.tool === 'Rect' && '#8080805c' || 'unset' }}
-                    >
-                        Everything
-                    </button>
-                </div>
-                <div>
-                    <button onClick={this.cleanCanvas}>
-                        Clean Canvas
-                    </button>
-                    <button onClick={this.undo}>
-                        Undo
-                    </button>
-                </div>
             </React.Fragment>
         );
     }
@@ -194,19 +171,26 @@ DrawCanvas.propTypes = {
      */
     brushSize: type.number,
     /**
-     * Color
+     * Color of what we want draw
      */
     color: type.string,
+    /**
+     * CanUndo
+     */
+    canUndo: type.bool,
+    /**
+     * Shapes that you can select to draw
+     */
+    tool: type.oneOf(['Line', 'Polygon', 'Rectangle']),
 }
-
 
 DrawCanvas.defaultProps = {
     width: 300,
     height: 300,
-    imgCover: false,
     brushSize: 2,
     color: '#000000',
-    tool: 'Line'
+    tool: 'Line',
+    canUndo: false,
 }
 
 export default DrawCanvas;

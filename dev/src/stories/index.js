@@ -35,10 +35,10 @@ storiesOf('Canvas', module)
       <DrawCanvas
         height="240"
         width="300"
-        tool="Line"
         imgSrc="https://ric-bucket.s3.amazonaws.com/device_5c05ee0cb669e165879e622a/sensorview.jpg"
         brushSize={Number(state.brush)}
         color={state.color}
+        tool={state.tool}
         onCompleteDraw={(data) => console.log(data)}
       />
     )} />

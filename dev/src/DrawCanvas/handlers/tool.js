@@ -1,14 +1,4 @@
-import keyManager from './keyManager';
-
 const Tool = {
-
-    init() {
-        keyManager.init();
-        keyManager.add('Escape', tool => {
-            tool.onMouseUp();
-            tool.resetState();
-        })
-    },
 
     setInitSettings(data) {
         this.state = {
@@ -48,10 +38,6 @@ const Tool = {
 
     onMouseUp() {
         throw new Error('onMouseUp must be implemented.');
-    },
-
-    onKeyUp(event, tool, callback) {
-        keyManager.dispatch(event.key, tool, callback);
     },
 
     createStartPoint(start, radius = 5) {
