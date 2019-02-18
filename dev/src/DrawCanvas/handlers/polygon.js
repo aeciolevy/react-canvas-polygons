@@ -26,7 +26,7 @@ polygon.onMouseMove = function onMouseMove(position, callback) {
         && this.state.canvasData.length > 0){
         this.state.started = false;
         callback && callback({
-            data: [this.state.start, position],
+            data: {start: this.state.start, end: position},
             canvas: {
                 start: this.state.start,
                 end: position,

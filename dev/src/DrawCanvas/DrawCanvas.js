@@ -67,9 +67,8 @@ class DrawCanvas extends React.PureComponent {
 
     correctPolygon = (data, startPoint) => {
         const lData = {...data};
-        const END = 1;
         lData.canvas.end = startPoint;
-        lData.data[END] = startPoint;
+        lData.data.end = startPoint;
         return lData;
     }
 
