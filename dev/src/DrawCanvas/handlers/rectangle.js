@@ -28,7 +28,7 @@ rectangle.onMouseMove = function onMouseMove(position) {
 
 rectangle.onMouseUp = function onMouseUp(position) {
     if (!this.state) return;
-    const data = [this.state.start, position];
+    const data = {start: this.state.start, end: position };
     const start = this.state.start;
     const options = this.state.options;
     this.state.started = false;

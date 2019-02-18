@@ -157,11 +157,11 @@ DrawCanvas.propTypes = {
     /**
      * The width of canvas
      */
-    width: type.string,
+    width: type.number,
     /**
      * the height of the canvas
      */
-    height: type.string,
+    height: type.number,
     /**
      * Background image to canvas;
      */
