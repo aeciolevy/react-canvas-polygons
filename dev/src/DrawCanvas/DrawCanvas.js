@@ -161,7 +161,7 @@ class DrawCanvas extends React.PureComponent {
         });
         this.tool.resetState();
         this.setDefaultTool();
-        // this.setState({ data: { Polygon: }})
+        this.setState({ data: {...data }});
     }
 
     render() {
