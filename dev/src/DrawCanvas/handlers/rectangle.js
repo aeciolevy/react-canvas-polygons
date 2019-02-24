@@ -1,5 +1,4 @@
 import Tool from './tool';
-export const RECTANGLE = 'Rectangle';
 
 const rectangle = { ...Tool };
 
@@ -13,6 +12,8 @@ rectangle.onMouseDown = function onMouseDown(start, options) {
 
 rectangle.draw = function draw(start, position, isInitSet, data, type = 'rectangle') {
     if (isInitSet === false) {
+        this.ctx.fillStyle = 'rgba(255,0,0, 0.1)';
+        this.ctx.lineWidth = 5;
         this.setInitSettings({ start, options: data.options })
     }
     this.ctx.stroke();

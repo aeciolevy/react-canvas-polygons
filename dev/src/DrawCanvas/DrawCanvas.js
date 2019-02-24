@@ -23,7 +23,6 @@ class DrawCanvas extends React.PureComponent {
         pastData: INITIAL_STATE,
         data: INITIAL_STATE,
         canvasData: [],
-        tool: 'Line',
         polygonId: canvasHandler.uuid(),
     }
 
@@ -35,6 +34,9 @@ class DrawCanvas extends React.PureComponent {
             ...this.state.data,
             'Polygon': { [this.state.polygonId]: []}
         } });
+        if (this.props.startDraw) {
+            this.loadDraw(this.props.startDraw);
+        }
     }
 
     componentDidUpdate(prevProps) {
@@ -45,9 +47,18 @@ class DrawCanvas extends React.PureComponent {
         }
     }
 
+    setDefaultTool =  () => {
+        this.tool = tools['Line'];
+    }
+
+    setContext = () => {
+        this.tool.ctx = this.ctx;
+    }
+
     onMouseDown = (e) => {
         const { brushSize, color } = this.props;
-        const { tool } = this.state;
+        const { tool } = this.props;
+        console.log(this.tool, tool);
         this.tool.onMouseDown(this.getCursorPosition(e), { brushSize, color, tool });
     }
 
@@ -104,8 +115,8 @@ class DrawCanvas extends React.PureComponent {
         const { top, left } = this.canvas.getBoundingClientRect();
         // clientY and clientX coordinate inside the element that the event occur.
         return {
-            y: e.clientY - top,
-            x: e.clientX - left,
+            x: Math.round(e.clientX - left),
+            y: Math.round(e.clientY - top),
         }
     }
 
@@ -125,11 +136,37 @@ class DrawCanvas extends React.PureComponent {
                 this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
                 this.state.canvasData.forEach(el => {
                     const { tool } = el.options;
-                    this.tool = tools[tool];
+                    this.tool = { ...this.tool, ...tools[tool] };
                     this.tool.draw(el.start, el.end, false, { options: el.options});
                 });
             });
         }
+    }
+
+    loadDraw = (data) => {
+        // clean the canvas
+        const X = 0, Y = 1;
+        const START = 0, END = 1;
+        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+        // loop through the data
+        Object.keys(data).forEach(el => {
+            let shape = canvasHandler.getTool(el);
+            this.tool = {...this.tool, ...tools[shape]};
+            let elPoints = data[el];
+            if (!el.startsWith('Poly')) {
+                elPoints.forEach((point) => {
+                    this.tool.draw({ x: point[START][X], y: point[START][Y] }, { x: point[END][X], y: point[END][Y] }, false, {
+                        options: { brushSize: this.props.brushSize },
+                    });
+                })
+            }
+            else {
+                elPoints.forEach((point, index, array) => {
+                    const nextPoint = array[index + 1] || array[0];
+                    this.tool.draw({ x: point[START][X], y: point[START][Y]}, { x: nextPoint[START][X], y: nextPoint[START][Y] }, false, { options: {}});
+                });
+            }
+        });
     }
 
     render() {
@@ -181,6 +218,7 @@ DrawCanvas.propTypes = {
      * Shapes that you can select to draw
      */
     tool: type.oneOf(['Line', 'Polygon', 'Rectangle']),
+    loadDraw: type.object,
 }
 
 DrawCanvas.defaultProps = {

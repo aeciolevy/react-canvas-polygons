@@ -1,2 +1,7 @@
 # Installation
 
+## API
+
+### Clean Canvas
+
+

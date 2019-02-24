@@ -4,7 +4,7 @@ export const LINE = 'Line';
 const line = { ...Tool };
 
 line.onMouseDown = function onMouseDown(start, options) {
-    this.ctx.strokeStyle = options.color;
+    this.ctx.strokeStyle = options && options.color || "#000";
     this.setInitSettings({ start, options });
     return this;
 }

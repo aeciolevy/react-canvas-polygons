@@ -16,7 +16,7 @@ const Tool = {
 
     draw(start, position, isInitSet, data) {
         if (isInitSet === false) {
-            this.setInitSettings({ start, options: data.options });
+            this.setInitSettings({ start, options: data.options || {} });
         }
         this.ctx.beginPath();
         this.ctx.moveTo(start.x, start.y);

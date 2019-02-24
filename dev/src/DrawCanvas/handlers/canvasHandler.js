@@ -23,4 +23,18 @@ canvasHandler.uuid = () => {
     return result
 }
 
+canvasHandler.pipe = (...fns) => x => fns.reduce((acc, curr) => curr(acc), x);
+
+canvasHandler.getTool = string => {
+    if (string.startsWith('Lin' || 'lin')){
+        return 'Line'
+    }
+    if (string.startsWith('Rect' || 'rect')){
+        return 'Rectangle'
+    }
+    if (string.startsWith('Pol' || 'pol')){
+        return 'Polygon'
+    }
+}
+
 export default canvasHandler;

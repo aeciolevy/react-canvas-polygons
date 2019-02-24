@@ -52,7 +52,4 @@ polygon.onMouseUp = function onMouseUp(position) {
     };
 }
 
-
-
 export default polygon;
-

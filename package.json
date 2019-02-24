@@ -5,7 +5,8 @@
   "main": "build/index.js",
   "scripts": {
     "dev": "watch 'npm run build' dev/src/DrawCanvas",
-    "build": "npx babel --watch dev/src/DrawCanvas -d build --presets=@babel/preset-env,@babel/preset-react --plugins=@babel/plugin-proposal-class-properties",
+    "build": "npx babel dev/src/DrawCanvas -d build --presets=@babel/preset-env,@babel/preset-react,babel-preset-minify --plugins=@babel/plugin-proposal-class-properties",
+    "prepublishOnly": "npm run build",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -29,12 +30,13 @@
   "homepage": "https://github.com/aeciolevy/react-canvas-polygons#readme",
   "devDependencies": {
     "@babel/cli": "^7.2.3",
-    "@babel/core": "^7.2.2",
+    "@babel/core": "^7.3.3",
     "@babel/plugin-proposal-class-properties": "^7.2.3",
     "@babel/plugin-transform-classes": "^7.2.2",
     "@babel/preset-env": "^7.2.3",
     "@babel/preset-react": "^7.0.0",
     "babel-plugin-transform-react-remove-prop-types": "^0.4.21",
+    "babel-preset-minify": "^0.5.0",
     "watch": "^1.0.2"
   },
   "dependencies": {
