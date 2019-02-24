@@ -12,7 +12,6 @@ const tools = {
 };
 
 const INITIAL_STATE = {
-    Polygon: {},
     Line: [],
     Rectangle: [],
 }
@@ -29,11 +28,8 @@ class DrawCanvas extends React.PureComponent {
     componentDidMount() {
         this.ctx = this.canvas.getContext('2d');
         this.tool = tools[this.props.tool] || tools['Line'];
+        this.setState({ data: { ...this.state.data, [`Polygon_${this.state.polygonId}`]: [] }})
         this.tool.ctx = this.ctx;
-        this.setState({ data: {
-            ...this.state.data,
-            'Polygon': { [this.state.polygonId]: []}
-        } });
         if (this.props.startDraw) {
             this.loadDraw(this.props.startDraw);
         }
@@ -48,29 +44,23 @@ class DrawCanvas extends React.PureComponent {
     }
 
     setDefaultTool =  () => {
-        this.tool = tools['Line'];
-    }
-
-    setContext = () => {
-        this.tool.ctx = this.ctx;
+        this.tool = {...this.tool, ...tools['Line'] };
     }
 
     onMouseDown = (e) => {
         const { brushSize, color } = this.props;
         const { tool } = this.props;
-        console.log(this.tool, tool);
         this.tool.onMouseDown(this.getCursorPosition(e), { brushSize, color, tool });
     }
 
     onMouseMove = (e) => {
         this.tool.onMouseMove(this.getCursorPosition(e), (data, startPoint) => {
-            const correctData = this.correctPolygon(data, startPoint);
-            this.updateData(correctData);
-            this.setState({ polygonId: canvasHandler.uuid() }, (parameters) => {
+            this.setState({ polygonId: canvasHandler.uuid() }, () => {
+                // Create another polygon ID to track the news polygons
                 this.setState({ data: {
                     ...this.state.data,
-                    'Polygon': { ...this.state.data['Polygon'], [this.state.polygonId] : []}
-                }})
+                    [`Polygon_${this.state.polygonId}`]: [],
+                }});
             });
             this.tool.resetState();
         })
@@ -79,7 +69,7 @@ class DrawCanvas extends React.PureComponent {
     correctPolygon = (data, startPoint) => {
         const lData = {...data};
         lData.canvas.end = startPoint;
-        lData.data.end = startPoint;
+        lData.data[1] = [startPoint.x, startPoint.y];
         return lData;
     }
 
@@ -91,17 +81,13 @@ class DrawCanvas extends React.PureComponent {
     updateData = (data) => {
         const { polygonId } = this.state;
         const { tool } = this.props;
+        const key = tool === 'Polygon' ? `Polygon_${polygonId}` : tool
         if (data) {
             this.setState({
                 pastData: { ...this.state.data },
                 data: {
                     ...this.state.data,
-                    [tool]: tool === 'Polygon' ?
-                    { ...this.state.data[tool],
-                        [polygonId]: [...this.state.data[tool][polygonId], data.data ]
-                    }
-                    :
-                    [...this.state.data[tool], data.data]
+                    [key]: [...this.state.data[key], data.data ]
                 },
                 canvasData: [...this.state.canvasData, data.canvas],
             }, () => {
@@ -163,10 +149,19 @@ class DrawCanvas extends React.PureComponent {
             else {
                 elPoints.forEach((point, index, array) => {
                     const nextPoint = array[index + 1] || array[0];
-                    this.tool.draw({ x: point[START][X], y: point[START][Y]}, { x: nextPoint[START][X], y: nextPoint[START][Y] }, false, { options: {}});
+                    this.tool.draw({ x: point[START][X], y: point[START][Y]}, { x: nextPoint[START][X], y: nextPoint[START][Y] }, false, { options: {
+                        brushSize: this.props.brushSize
+                    }});
+                    if (!array[index + 1]) {
+                        this.tool.ctx.fillStyle = 'rgba(12, 193, 31, 0.25)';
+                        this.tool.ctx.fill();
+                    }
                 });
             }
         });
+        this.tool.resetState();
+        this.setDefaultTool();
+        // this.setState({ data: { Polygon: }})
     }
 
     render() {

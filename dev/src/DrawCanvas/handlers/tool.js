@@ -21,11 +21,11 @@ const Tool = {
         this.ctx.beginPath();
         this.ctx.moveTo(start.x, start.y);
         this.ctx.lineTo(position.x, position.y);
+        this.ctx.closePath();
         /*fill what we have.
          *Context will close the subpath but without marking it as closed*/
         this.ctx.fill();
         this.ctx.stroke();
-        this.ctx.closePath();
     },
 
     onMouseDown() {
