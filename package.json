@@ -1,6 +1,6 @@
 {
   "name": "react-canvas-polygons",
-  "version": "1.0.6",
+  "version": "1.0.7",
   "description": "Draw lines and polygons with canvas. Save and load path to canvas.",
   "main": "build/index.js",
   "scripts": {
