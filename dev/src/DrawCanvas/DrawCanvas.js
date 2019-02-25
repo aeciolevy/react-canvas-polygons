@@ -28,11 +28,12 @@ class DrawCanvas extends React.PureComponent {
     componentDidMount() {
         this.ctx = this.canvas.getContext('2d');
         this.tool = tools[this.props.tool] || tools['Line'];
-        this.setState({ data: { ...this.state.data, [`Polygon_${this.state.polygonId}`]: [] }})
         this.tool.ctx = this.ctx;
-        if (this.props.startDraw && this.props.imgSrc) {
-            this.loadDraw(this.props.startDraw);
-        }
+        this.setState({ data: { ...this.state.data, [`Polygon_${this.state.polygonId}`]: [] }}, () => {
+            if (this.props.startDraw && this.props.imgSrc) {
+                this.loadDraw(this.props.startDraw);
+            }
+        })
     }
 
     componentDidUpdate(prevProps) {
@@ -78,13 +79,14 @@ class DrawCanvas extends React.PureComponent {
 
     onMouseUp = (e) => {
         const newData = this.tool.onMouseUp(this.getCursorPosition(e));
+        console.log(newData)
         this.updateData(newData);
     }
 
     updateData = (data) => {
         const { polygonId } = this.state;
         const { tool } = this.props;
-        const key = tool === 'Polygon' ? `Polygon_${polygonId}` : tool
+        const key = tool === 'Polygon' ? `Polygon_${polygonId}` : tool;
         if (data) {
             this.setState({
                 pastData: { ...this.state.data },
@@ -164,7 +166,7 @@ class DrawCanvas extends React.PureComponent {
         });
         this.tool.resetState();
         this.setDefaultTool();
-        this.setState({ data: {...data }});
+        this.setState({ data: {...this.state.data, ...data }});
     }
 
     render() {
