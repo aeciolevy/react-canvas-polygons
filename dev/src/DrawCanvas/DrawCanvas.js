@@ -30,7 +30,7 @@ class DrawCanvas extends React.PureComponent {
         this.tool = tools[this.props.tool] || tools['Line'];
         this.setState({ data: { ...this.state.data, [`Polygon_${this.state.polygonId}`]: [] }})
         this.tool.ctx = this.ctx;
-        if (this.props.startDraw) {
+        if (this.props.startDraw && this.props.imgSrc) {
             this.loadDraw(this.props.startDraw);
         }
     }
@@ -40,6 +40,9 @@ class DrawCanvas extends React.PureComponent {
             this.tool = tools[this.props.tool];
             this.tool.ctx = this.ctx;
             this.tool.resetState();
+        }
+        if (prevProps.imgSrc !== this.props.imgSrc){
+            this.loadDraw(this.props.startDraw);
         }
     }
 
@@ -213,7 +216,7 @@ DrawCanvas.propTypes = {
      * Shapes that you can select to draw
      */
     tool: type.oneOf(['Line', 'Polygon', 'Rectangle']),
-    loadDraw: type.object,
+    startDraw: type.object,
 }
 
 DrawCanvas.defaultProps = {
