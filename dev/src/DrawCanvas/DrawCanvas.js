@@ -138,7 +138,7 @@ class DrawCanvas extends React.PureComponent {
         const START = 0, END = 1;
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
         // loop through the data
-        Object.keys(data).forEach(el => {
+        data && Object.keys(data).forEach(el => {
             let shape = canvasHandler.getTool(el);
             this.tool = {...this.tool, ...tools[shape]};
             let elPoints = data[el];
