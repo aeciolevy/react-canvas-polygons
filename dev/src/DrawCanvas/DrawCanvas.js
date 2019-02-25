@@ -152,7 +152,7 @@ class DrawCanvas extends React.PureComponent {
             else {
                 elPoints.forEach((point, index, array) => {
                     const nextPoint = array[index + 1] || array[0];
-                    this.tool.draw({ x: point[START][X], y: point[START][Y]}, { x: nextPoint[START][X], y: nextPoint[START][Y] }, false, { options: {
+                    this.tool.draw({ x: point[X], y: point[Y]}, { x: nextPoint[X], y: nextPoint[Y] }, false, { options: {
                         brushSize: this.props.brushSize
                     }});
                     if (!array[index + 1]) {
