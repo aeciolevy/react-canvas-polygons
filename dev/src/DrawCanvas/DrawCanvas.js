@@ -79,7 +79,6 @@ class DrawCanvas extends React.PureComponent {
 
     onMouseUp = (e) => {
         const newData = this.tool.onMouseUp(this.getCursorPosition(e));
-        console.log(newData)
         this.updateData(newData);
     }
 
