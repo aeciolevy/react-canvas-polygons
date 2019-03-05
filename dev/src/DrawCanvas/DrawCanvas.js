@@ -113,7 +113,10 @@ class DrawCanvas extends React.PureComponent {
 
     cleanCanvas = () => {
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-        this.setState({ data: INITIAL_STATE, canvasData: [] });
+        this.setState({ data: INITIAL_STATE, canvasData: [] }, () => {
+            this.props.onCompleteDraw && this.props.onCompleteDraw(this.state.data);
+        });
+
     }
 
     undo = () => {
