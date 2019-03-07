@@ -13,7 +13,6 @@ polygon.onMouseDown = function onMouseDown(start, options) {
     }
     this.ctx.fillStyle = options.color;
     this.setInitSettings({ start, options });
-    return this;
 }
 
 polygon.onMouseMove = function onMouseMove(position, callback) {

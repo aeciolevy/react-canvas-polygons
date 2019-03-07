@@ -7,16 +7,14 @@ rectangle.onMouseDown = function onMouseDown(start, options) {
     this.ctx.fillStyle = 'rgba(255,0,0, 0.1)';
     this.ctx.lineWidth = 5;
     this.setInitSettings({ start, options });
-    return this;
 }
 
-rectangle.draw = function draw(start, position, isInitSet, data, type = 'rectangle') {
+rectangle.draw = function draw(start, position, isInitSet, data) {
     if (isInitSet === false) {
-        this.ctx.fillStyle = 'rgba(255,0,0, 0.1)';
+        this.ctx.fillStyle = 'rgba(255,0, 0, 0.1)';
         this.ctx.lineWidth = 5;
         this.setInitSettings({ start, options: data.options })
     }
-    this.ctx.stroke();
     this.ctx.fillRect(start.x, start.y, position.x - start.x, position.y - start.y);
     this.ctx.strokeRect(start.x, start.y, position.x - start.x, position.y - start.y);
 }

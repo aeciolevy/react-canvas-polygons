@@ -29,11 +29,9 @@ class DrawCanvas extends React.PureComponent {
         this.ctx = this.canvas.getContext('2d');
         this.tool = tools[this.props.tool] || tools['Line'];
         this.tool.ctx = this.ctx;
-        this.setState({ data: { ...this.state.data, [`Polygon_${this.state.polygonId}`]: [] }}, () => {
-            if (this.props.startDraw && this.props.imgSrc) {
-                this.loadDraw(this.props.startDraw);
-            }
-        })
+        if (this.props.startDraw && this.props.imgSrc) {
+            this.loadDraw(this.props.startDraw);
+        }
     }
 
     componentDidUpdate(prevProps) {
@@ -48,12 +46,18 @@ class DrawCanvas extends React.PureComponent {
     }
 
     setDefaultTool =  () => {
-        this.tool = {...this.tool, ...tools['Line'] };
+        this.tool = tools['Line'];
+        this.tool.ctx = this.ctx;
+        this.tool.resetState();
     }
 
     onMouseDown = (e) => {
         const { brushSize, color } = this.props;
         const { tool } = this.props;
+        if (tool === 'Polygon') {
+            this.setState({ data: { ...this.state.data, [`Polygon_${this.state.polygonId}`]: [] } }, () => {
+            });
+        }
         this.tool.onMouseDown(this.getCursorPosition(e), { brushSize, color, tool });
     }
 
@@ -115,7 +119,6 @@ class DrawCanvas extends React.PureComponent {
         this.setState({ data: INITIAL_STATE, canvasData: [] }, () => {
             this.props.onCompleteDraw && this.props.onCompleteDraw(this.state.data);
         });
-
     }
 
     undo = () => {
@@ -137,42 +140,38 @@ class DrawCanvas extends React.PureComponent {
     }
 
     loadDraw = (data) => {
-        // clean the canvas
         const X = 0, Y = 1;
         const START = 0, END = 1;
+        // clean the canvas
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
         // loop through the data
         data && Object.keys(data).forEach(el => {
             let shape = canvasHandler.getTool(el);
-            this.tool = {...this.tool, ...tools[shape]};
+            this.tool = tools[shape];
+            this.tool.ctx = this.ctx;
+            this.tool.resetState();
             let elPoints = data[el];
             if (!el.startsWith('Poly')) {
                 elPoints.forEach((point) => {
                     this.tool.draw({ x: point[START][X], y: point[START][Y] }, { x: point[END][X], y: point[END][Y] }, false, {
                         options: { brushSize: this.props.brushSize },
-                    });
-                })
-            }
-            else {
+                    }, true);
+                });
+            } else {
                 elPoints.forEach((point, index, array) => {
                     const nextPoint = array[index + 1] || array[0];
                     this.tool.draw({ x: point[X], y: point[Y]}, { x: nextPoint[X], y: nextPoint[Y] }, false, { options: {
                         brushSize: this.props.brushSize
-                    }});
-                    if (!array[index + 1]) {
-                        this.tool.ctx.fillStyle = 'rgba(12, 193, 31, 0.25)';
-                        this.tool.ctx.fill();
-                    }
+                    }}, true);
                 });
             }
         });
-        this.tool.resetState();
         this.setDefaultTool();
         this.setState({ data: {...this.state.data, ...data }});
     }
 
     render() {
-        const { width, height, imgSrc, canUndo } = this.props;
+        const { width, height, imgSrc } = this.props;
 
         return(
             <React.Fragment>

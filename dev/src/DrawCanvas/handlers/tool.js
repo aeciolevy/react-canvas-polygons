@@ -12,11 +12,12 @@ const Tool = {
             0, 0, this.ctx.canvas.width, this.ctx.canvas.height
         );
         this.ctx.lineWidth = data.options.brushSize;
+        this.ctx.strokeStyle = "#000";
     },
 
     draw(start, position, isInitSet, data) {
         if (isInitSet === false) {
-            this.setInitSettings({ start, options: data.options || {} });
+            this.setInitSettings({ start, options: data.options || {} }, true);
         }
         this.ctx.beginPath();
         this.ctx.moveTo(start.x, start.y);
