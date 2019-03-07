@@ -29,8 +29,8 @@ class DrawCanvas extends React.PureComponent {
         this.ctx = this.canvas.getContext('2d');
         this.tool = tools[this.props.tool] || tools['Line'];
         this.tool.ctx = this.ctx;
-        if (this.props.startDraw && this.props.imgSrc) {
-            this.loadDraw(this.props.startDraw);
+        if (this.props.initialData && this.props.imgSrc) {
+            this.loadDraw(this.props.initialData);
         }
     }
 
@@ -41,7 +41,7 @@ class DrawCanvas extends React.PureComponent {
             this.tool.resetState();
         }
         if (prevProps.imgSrc !== this.props.imgSrc){
-            this.loadDraw(this.props.startDraw);
+            this.loadDraw(this.props.initialData);
         }
     }
 
@@ -219,7 +219,7 @@ DrawCanvas.propTypes = {
      * Shapes that you can select to draw
      */
     tool: type.oneOf(['Line', 'Polygon', 'Rectangle']),
-    startDraw: type.object,
+    initialData: type.object,
 }
 
 DrawCanvas.defaultProps = {

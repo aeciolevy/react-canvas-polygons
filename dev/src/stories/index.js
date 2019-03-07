@@ -45,7 +45,7 @@ storiesOf('Canvas', module)
         color={state.color}
         tool={state.tool}
         onCompleteDraw={(data) => console.log(data)}
-        startDraw={testData}
+        initialData={testData}
       />
     )} />
   </div>
