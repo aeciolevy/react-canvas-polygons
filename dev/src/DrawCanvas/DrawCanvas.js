@@ -54,31 +54,16 @@ class DrawCanvas extends React.PureComponent {
     onMouseDown = (e) => {
         const { brushSize, color } = this.props;
         const { tool } = this.props;
-        if (tool === 'Polygon') {
-            this.setState({ data: { ...this.state.data, [`Polygon_${this.state.polygonId}`]: [] } }, () => {
-            });
+        const polygonKey = `Polygon_${this.state.polygonId}`;
+        if (tool === 'Polygon' && !this.state.data[polygonKey]) {
+
+            this.setState({ data: { ...this.state.data, [polygonKey]: [] } });
         }
         this.tool.onMouseDown(this.getCursorPosition(e), { brushSize, color, tool });
     }
 
     onMouseMove = (e) => {
-        this.tool.onMouseMove(this.getCursorPosition(e), (data, startPoint) => {
-            this.setState({ polygonId: canvasHandler.uuid() }, () => {
-                // Create another polygon ID to track the news polygons
-                this.setState({ data: {
-                    ...this.state.data,
-                    [`Polygon_${this.state.polygonId}`]: [],
-                }});
-            });
-            this.tool.resetState();
-        })
-    }
-
-    correctPolygon = (data, startPoint) => {
-        const lData = {...data};
-        lData.canvas.end = startPoint;
-        lData.data[1] = [startPoint.x, startPoint.y];
-        return lData;
+        this.tool.onMouseMove(this.getCursorPosition(e));
     }
 
     onMouseUp = (e) => {
@@ -86,19 +71,22 @@ class DrawCanvas extends React.PureComponent {
         this.updateData(newData);
     }
 
-    updateData = (data) => {
+    updateData = (dataFromTool) => {
         const { polygonId } = this.state;
         const { tool } = this.props;
         const key = tool === 'Polygon' ? `Polygon_${polygonId}` : tool;
-        if (data) {
+        console.log('data from tool: ', this.state.data, key);
+        console.log('argument: ', dataFromTool.data);
+        if (dataFromTool) {
             this.setState({
                 pastData: { ...this.state.data },
                 data: {
                     ...this.state.data,
-                    [key]: [...this.state.data[key], data.data ]
+                    [key]: [...this.state.data[key], dataFromTool.data ]
                 },
-                canvasData: [...this.state.canvasData, data.canvas],
+                canvasData: [...this.state.canvasData, dataFromTool.canvas],
             }, () => {
+                console.log(this.state.data[key]);
                 this.props.onCompleteDraw && this.props.onCompleteDraw(this.state.data);
             });
         }

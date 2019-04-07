@@ -37,7 +37,7 @@ polygon.onMouseMove = function onMouseMove(position, callback) {
 
 polygon.onMouseUp = function onMouseUp(position) {
     if (!this.state) return;
-    const data = [this.state.start.x, this.state.start.y];
+    const data = [[this.state.start.x, this.state.start.y], [position.x, position.y]];
     this.state.canvasData.push(data);
     const start = this.state.start;
     const options = this.state.options;
