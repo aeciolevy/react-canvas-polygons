@@ -24,6 +24,7 @@ Prop | Type | Default | Req | Description
 **height** | `Number` |  `300` | - | the height of the canvas
 **imgSrc** | `String` |  | - | Background image to canvas;
 **initialData** | `Object` |  | - | Is the data to be be draw when load the component
+**onCompleteDraw** | `Function` |  | - | This is a callback function that we be called everytime a shape finish to draw
 **tool** | `Enum('Line','Polygon','Rectangle')` |  `'Line'` | - | Shapes that you can select to draw
 **width** | `Number` |  `300` | - | The width of canvas
 

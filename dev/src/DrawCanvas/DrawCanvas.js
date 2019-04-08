@@ -227,6 +227,11 @@ DrawCanvas.propTypes = {
      * Is the data to be be draw when load the component
      */
     initialData: type.object,
+    /**
+     * This is a callback function that we be called
+     * everytime a shape finish to draw
+     */
+    onCompleteDraw: type.func,
 }
 
 DrawCanvas.defaultProps = {
