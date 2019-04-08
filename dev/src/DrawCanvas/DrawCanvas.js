@@ -16,6 +16,12 @@ const INITIAL_STATE = {
     Rectangle: [],
 }
 
+/**
+ * @componentName DrawCanvas
+ * @description: This is a component to draw
+ * shapes on canvas
+ */
+
 class DrawCanvas extends React.PureComponent {
 
     state = {
@@ -217,6 +223,9 @@ DrawCanvas.propTypes = {
      * Shapes that you can select to draw
      */
     tool: type.oneOf(['Line', 'Polygon', 'Rectangle']),
+    /**
+     * Is the data to be be draw when load the component
+     */
     initialData: type.object,
 }
 
