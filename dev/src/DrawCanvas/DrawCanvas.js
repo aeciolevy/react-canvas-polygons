@@ -75,20 +75,31 @@ class DrawCanvas extends React.PureComponent {
         const { polygonId } = this.state;
         const { tool } = this.props;
         const key = tool === 'Polygon' ? `Polygon_${polygonId}` : tool;
-        console.log('data from tool: ', this.state.data, key);
-        console.log('argument: ', dataFromTool.data);
+
         if (dataFromTool) {
-            this.setState({
-                pastData: { ...this.state.data },
-                data: {
-                    ...this.state.data,
-                    [key]: [...this.state.data[key], dataFromTool.data ]
-                },
-                canvasData: [...this.state.canvasData, dataFromTool.canvas],
-            }, () => {
-                console.log(this.state.data[key]);
-                this.props.onCompleteDraw && this.props.onCompleteDraw(this.state.data);
-            });
+            if (tool !== 'Polygon') {
+                this.setState({
+                    pastData: { ...this.state.data },
+                    data: {
+                        ...this.state.data,
+                        [key]: [...this.state.data[key], dataFromTool.data ]
+                    },
+                    canvasData: [...this.state.canvasData, dataFromTool.canvas],
+                }, () => {
+                    this.props.onCompleteDraw && this.props.onCompleteDraw(this.state.data);
+                });
+            } else {
+                this.setState({
+                    pastData: { ...this.state.data },
+                    data: {
+                        ...this.state.data,
+                        [key]: [...this.state.data[key], ...dataFromTool.data]
+                    },
+                    canvasData: [...this.state.canvasData, dataFromTool.canvas],
+                }, () => {
+                    this.props.onCompleteDraw && this.props.onCompleteDraw(this.state.data);
+                });
+            }
         }
     }
 
@@ -137,20 +148,19 @@ class DrawCanvas extends React.PureComponent {
             let shape = canvasHandler.getTool(el);
             this.tool = tools[shape];
             this.tool.ctx = this.ctx;
-            this.tool.resetState();
             let elPoints = data[el];
             if (!el.startsWith('Poly')) {
                 elPoints.forEach((point) => {
                     this.tool.draw({ x: point[START][X], y: point[START][Y] }, { x: point[END][X], y: point[END][Y] }, false, {
                         options: { brushSize: this.props.brushSize },
-                    }, true);
+                    });
                 });
             } else {
                 elPoints.forEach((point, index, array) => {
                     const nextPoint = array[index + 1] || array[0];
                     this.tool.draw({ x: point[X], y: point[Y]}, { x: nextPoint[X], y: nextPoint[Y] }, false, { options: {
                         brushSize: this.props.brushSize
-                    }}, true);
+                    }});
                 });
             }
         });

@@ -3,6 +3,8 @@ export const LINE = 'Line';
 
 const line = { ...Tool };
 
+line.name = 'Line';
+
 line.onMouseDown = function onMouseDown(start, options) {
     this.ctx.strokeStyle = options ? options.color : "#000";
     this.setInitSettings({ start, options });

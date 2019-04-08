@@ -3,6 +3,8 @@ export const POLYGON = 'Polygon';
 
 const polygon = { ...Tool };
 
+polygon.name = 'Polygon';
+
 polygon.onMouseDown = function onMouseDown(start, options) {
     if (!this.state) {
         this.state = {

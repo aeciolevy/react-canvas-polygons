@@ -2,6 +2,8 @@ import Tool from './tool';
 
 const rectangle = { ...Tool };
 
+rectangle.name = 'Rectangle'
+
 rectangle.onMouseDown = function onMouseDown(start, options) {
     this.ctx.strokeStyle = options.color;
     this.ctx.fillStyle = 'rgba(255,0,0, 0.1)';
