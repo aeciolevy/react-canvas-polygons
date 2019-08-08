@@ -25,15 +25,8 @@ polygon.onMouseMove = function onMouseMove(position, callback) {
     // to be drawn
     if (this.ctx.isPointInPath(this.state.initialCircle, position.x, position.y)
         && this.state.canvasData.length > 0){
-        this.state.started = false;
-        callback && callback({
-            data: [[this.state.start.x, this.state.start.y], [position.x, position.y]],
-            canvas: {
-                start: this.state.start,
-                end: position,
-                options: this.state.options,
-            }
-        }, this.state.startPoint);
+        this.resetState();
+
     }
 }
 
