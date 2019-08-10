@@ -99,7 +99,7 @@ class DrawCanvas extends React.PureComponent {
                     pastData: { ...this.state.data },
                     data: {
                         ...this.state.data,
-                        [key]: [...this.state.data[key], ...dataFromTool.data]
+                        [key]: [...this.state.data[key], dataFromTool.data]
                     },
                     canvasData: [...this.state.canvasData, dataFromTool.canvas],
                 }, () => {
@@ -167,6 +167,7 @@ class DrawCanvas extends React.PureComponent {
                     this.tool.draw({ x: point[X], y: point[Y]}, { x: nextPoint[X], y: nextPoint[Y] }, false, { options: {
                         brushSize: this.props.brushSize
                     }});
+                    this.tool.fillGeometry(elPoints);
                 });
             }
         });
