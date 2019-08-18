@@ -167,8 +167,8 @@ class DrawCanvas extends React.PureComponent {
                     this.tool.draw({ x: point[X], y: point[Y]}, { x: nextPoint[X], y: nextPoint[Y] }, false, { options: {
                         brushSize: this.props.brushSize
                     }});
-                    this.tool.fillGeometry(elPoints);
                 });
+                this.tool.fillGeometry(elPoints);
             }
         });
         this.setDefaultTool();
