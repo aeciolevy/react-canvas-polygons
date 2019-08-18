@@ -27,12 +27,15 @@ rectangle.onMouseMove = function onMouseMove(position) {
     this.draw(this.state.start, position);
 }
 
-rectangle.onMouseUp = function onMouseUp(position) {
+rectangle.onMouseUp = function onMouseUp(position, callback) {
     if (!this.state) return;
     const data = [[this.state.start.x, this.state.start.y], [position.x, position.y]];
     const start = this.state.start;
     const options = this.state.options;
     this.state.started = false;
+    // this callback is just to trigger a new
+    // Rectangle ID
+    callback();
     return {
         data: data,
         canvas: {
