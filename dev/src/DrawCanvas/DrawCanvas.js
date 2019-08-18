@@ -61,7 +61,10 @@ class DrawCanvas extends React.PureComponent {
         const { brushSize, color } = this.props;
         const { tool } = this.props;
 
-        this.createNewToolInitialData(tool);
+        if (tool !== 'Line') {
+            this.createNewToolInitialData(tool);
+        }
+
         this.tool.onMouseDown(this.getCursorPosition(e), { brushSize, color, tool });
     }
 
@@ -88,35 +91,23 @@ class DrawCanvas extends React.PureComponent {
     updateData = (dataFromTool) => {
         const { polygonId, rectangleId } = this.state;
         const { tool } = this.props;
-        const key = tool === 'Polygon' ? `Polygon_${polygonId}` : `Rectangle_${rectangleId}`;
+        const key = tool === 'Line' ? tool : tool === 'Polygon' ? `Polygon_${polygonId}` : `Rectangle_${rectangleId}`;
 
         // TODO: Refactor, this code to a DRY version
         if (dataFromTool) {
-            if (tool === 'Line') {
-                this.setState({
-                    pastData: { ...this.state.data },
-                    data: {
-                        ...this.state.data,
-                        'Line': [...this.state.data['Line'], dataFromTool.data ]
-                    },
-                    canvasData: [...this.state.canvasData, dataFromTool.canvas],
-                }, () => {
-                    this.props.onCompleteDraw && this.props.onCompleteDraw(this.state.data);
-                });
-            } else {
-                const dataToUpdate = key.startsWith('Poly') ?
-                    [...this.state.data[key], dataFromTool.data] : [...this.state.data[key], ...dataFromTool.data ];
-                this.setState({
-                    pastData: { ...this.state.data },
-                    data: {
-                        ...this.state.data,
-                        [key]: dataToUpdate,
-                    },
-                    canvasData: [...this.state.canvasData, dataFromTool.canvas],
-                }, () => {
-                    this.props.onCompleteDraw && this.props.onCompleteDraw(this.state.data);
-                });
-            }
+            const dataToUpdate = key.startsWith('Poly') || key.startsWith('Line') ?
+                [...this.state.data[key], dataFromTool.data] : [...this.state.data[key], ...dataFromTool.data];
+
+            this.setState({
+                pastData: { ...this.state.data },
+                data: {
+                    ...this.state.data,
+                    [key]: dataToUpdate,
+                },
+                canvasData: [...this.state.canvasData, dataFromTool.canvas],
+            }, () => {
+                this.props.onCompleteDraw && this.props.onCompleteDraw(this.state.data);
+            });
         }
     }
 
