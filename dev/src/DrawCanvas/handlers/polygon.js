@@ -33,8 +33,13 @@ polygon.onMouseMove = function onMouseMove(position, callback) {
             // so we can fill it out.
             this.fillGeometry(this.state.pathData);
             this.resetState();
-        // this.ctx.fill(this.path);
+            // This callback is just to
+            // sinalize we finish to draw and
+            // we should create another polygon ID
+            // to track the data
+            callback();
     }
+
 }
 
 polygon.fillGeometry = function fillGeometry (pathData) {

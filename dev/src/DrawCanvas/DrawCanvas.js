@@ -13,7 +13,6 @@ const tools = {
 
 const INITIAL_STATE = {
     Line: [],
-    Rectangle: [],
 }
 
 /**
@@ -29,6 +28,7 @@ class DrawCanvas extends React.PureComponent {
         data: INITIAL_STATE,
         canvasData: [],
         polygonId: canvasHandler.uuid(),
+        rectangleId: canvasHandler.uuid(),
     }
 
     componentDidMount() {
@@ -60,52 +60,54 @@ class DrawCanvas extends React.PureComponent {
     onMouseDown = (e) => {
         const { brushSize, color } = this.props;
         const { tool } = this.props;
-        const polygonKey = `Polygon_${this.state.polygonId}`;
-        if (tool === 'Polygon' && !this.state.data[polygonKey]) {
 
-            this.setState({ data: { ...this.state.data, [polygonKey]: [] } });
+        if (tool !== 'Line') {
+            this.createNewToolInitialData(tool);
         }
+
         this.tool.onMouseDown(this.getCursorPosition(e), { brushSize, color, tool });
     }
 
+    createNewToolInitialData = (tool) => {
+        const toolId = tool.startsWith('Poly') ? 'polygonId' : 'rectangleId';
+        const keyId = `${tool}_${this.state[toolId]}`;
+        if (!this.state.data[keyId]) {
+            this.setState({ data: { ...this.state.data, [keyId]: [] } });
+        }
+    }
+
     onMouseMove = (e) => {
-        this.tool.onMouseMove(this.getCursorPosition(e));
+        this.tool.onMouseMove(this.getCursorPosition(e), () => this.setState({ polygonId: canvasHandler.uuid() }));
     }
 
     onMouseUp = (e) => {
-        const newData = this.tool.onMouseUp(this.getCursorPosition(e));
+        const newData = this.tool.onMouseUp(
+            this.getCursorPosition(e),
+            (finish) => this.setState({ rectangleId: canvasHandler.uuid() })
+        );
         this.updateData(newData);
     }
 
     updateData = (dataFromTool) => {
-        const { polygonId } = this.state;
+        const { polygonId, rectangleId } = this.state;
         const { tool } = this.props;
-        const key = tool === 'Polygon' ? `Polygon_${polygonId}` : tool;
+        const key = tool === 'Line' ? tool : tool === 'Polygon' ? `Polygon_${polygonId}` : `Rectangle_${rectangleId}`;
 
+        // TODO: Refactor, this code to a DRY version
         if (dataFromTool) {
-            if (tool !== 'Polygon') {
-                this.setState({
-                    pastData: { ...this.state.data },
-                    data: {
-                        ...this.state.data,
-                        [key]: [...this.state.data[key], dataFromTool.data ]
-                    },
-                    canvasData: [...this.state.canvasData, dataFromTool.canvas],
-                }, () => {
-                    this.props.onCompleteDraw && this.props.onCompleteDraw(this.state.data);
-                });
-            } else {
-                this.setState({
-                    pastData: { ...this.state.data },
-                    data: {
-                        ...this.state.data,
-                        [key]: [...this.state.data[key], dataFromTool.data]
-                    },
-                    canvasData: [...this.state.canvasData, dataFromTool.canvas],
-                }, () => {
-                    this.props.onCompleteDraw && this.props.onCompleteDraw(this.state.data);
-                });
-            }
+            const dataToUpdate = key.startsWith('Poly') || key.startsWith('Line') ?
+                [...this.state.data[key], dataFromTool.data] : [...this.state.data[key], ...dataFromTool.data];
+
+            this.setState({
+                pastData: { ...this.state.data },
+                data: {
+                    ...this.state.data,
+                    [key]: dataToUpdate,
+                },
+                canvasData: [...this.state.canvasData, dataFromTool.canvas],
+            }, () => {
+                this.props.onCompleteDraw && this.props.onCompleteDraw(this.state.data);
+            });
         }
     }
 
