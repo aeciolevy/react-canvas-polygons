@@ -157,7 +157,7 @@ class DrawCanvas extends React.PureComponent {
             this.tool = tools[shape];
             this.tool.ctx = this.ctx;
             let elPoints = data[el];
-            if (!el.startsWith('Poly')) {
+            if (el.startsWith('Line')) {
                 elPoints.forEach((point) => {
                     this.tool.draw({ x: point[START][X], y: point[START][Y] }, { x: point[END][X], y: point[END][Y] }, false, {
                         options: { brushSize: this.props.brushSize },
@@ -165,12 +165,16 @@ class DrawCanvas extends React.PureComponent {
                 });
             } else {
                 elPoints.forEach((point, index, array) => {
-                    const nextPoint = array[index + 1] || array[0];
-                    this.tool.draw({ x: point[X], y: point[Y]}, { x: nextPoint[X], y: nextPoint[Y] }, false, { options: {
-                        brushSize: this.props.brushSize
-                    }});
+                    const nextPoint = el.startsWith('Rect') ? array[index + 1] : (array[index + 1] || array[0]);
+                    if (nextPoint) {
+                        this.tool.draw({ x: point[X], y: point[Y]}, { x: nextPoint[X], y: nextPoint[Y] }, false, { options: {
+                            brushSize: this.props.brushSize
+                        }});
+                    }
                 });
-                this.tool.fillGeometry(elPoints);
+                if (el.startsWith('Poly')) {
+                    this.tool.fillGeometry(elPoints);
+                }
             }
         });
         this.setDefaultTool();
