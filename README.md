@@ -163,3 +163,5 @@ This will clean the canvas and reset the component state.
 ```
 
 
+## TODO
+- Don't save data to polygon if the data length is less than 2;
