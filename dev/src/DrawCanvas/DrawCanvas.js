@@ -60,16 +60,17 @@ class DrawCanvas extends React.PureComponent {
     onMouseDown = (e) => {
         const { brushSize, color } = this.props;
         const { tool } = this.props;
-        const polygonKey = `Polygon_${this.state.polygonId}`;
-        const rectangleKey = `Rectangle_${this.state.rectangleId}`;
 
-        if (tool === 'Polygon' && !this.state.data[polygonKey]) {
-            this.setState({ data: { ...this.state.data, [polygonKey]: [] } });
-        }
-        if (tool === 'Rectangle' && !this.state.data[rectangleKey]) {
-            this.setState({ data: { ...this.state.data, [rectangleKey]: [] }});
-        }
+        this.createNewToolInitialData(tool);
         this.tool.onMouseDown(this.getCursorPosition(e), { brushSize, color, tool });
+    }
+
+    createNewToolInitialData = (tool) => {
+        const toolId = tool.startsWith('Poly') ? 'polygonId' : 'rectangleId';
+        const keyId = `${tool}_${this.state[toolId]}`;
+        if (!this.state.data[keyId]) {
+            this.setState({ data: { ...this.state.data, [keyId]: [] } });
+        }
     }
 
     onMouseMove = (e) => {
