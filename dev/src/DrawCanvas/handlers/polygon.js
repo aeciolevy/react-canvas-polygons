@@ -28,7 +28,7 @@ polygon.onMouseMove = function onMouseMove(position, callback) {
     // check canvas data to ensure that algorithm started
     // to be drawn
     if (this.ctx.isPointInPath(this.state.initialCircle, position.x, position.y)
-        && this.state.canvasData.length > 0){
+        && this.state.canvasData.length > 0 && this.state.pathData.length >= 3) {
             // the idea is to reconstructed the path using this.state.pathData here
             // so we can fill it out.
             this.fillGeometry(this.state.pathData);
@@ -39,7 +39,6 @@ polygon.onMouseMove = function onMouseMove(position, callback) {
             // to track the data
             callback();
     }
-
 }
 
 polygon.fillGeometry = function fillGeometry (pathData) {
