@@ -164,4 +164,4 @@ This will clean the canvas and reset the component state.
 
 
 ## TODO
-- Don't save data to polygon if the data length is less than 2;
+- We should track what we are drawing so it would make easier to cancel or undo

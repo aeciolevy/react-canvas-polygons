@@ -146,9 +146,11 @@ class DrawCanvas extends React.PureComponent {
         }
     }
 
+    // TODO: refactor this function to canvas handle
     loadDraw = (data) => {
         const X = 0, Y = 1;
         const START = 0, END = 1;
+        const TOP_LEFT = 0, BOTTOM_RIGHT = 2;
         // clean the canvas
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
         // loop through the data
@@ -156,6 +158,9 @@ class DrawCanvas extends React.PureComponent {
             let shape = canvasHandler.getTool(el);
             this.tool = tools[shape];
             this.tool.ctx = this.ctx;
+            if (el.startsWith('Rectan')) {
+                data[el] = [data[el][TOP_LEFT], data[el][BOTTOM_RIGHT]];
+            }
             let elPoints = data[el];
             if (el.startsWith('Line')) {
                 elPoints.forEach((point) => {
@@ -166,6 +171,7 @@ class DrawCanvas extends React.PureComponent {
             } else {
                 elPoints.forEach((point, index, array) => {
                     const nextPoint = el.startsWith('Rect') ? array[index + 1] : (array[index + 1] || array[0]);
+                if (el.startsWith('Rect')) console.log('nextpoint: ', nextPoint);
                     if (nextPoint) {
                         this.tool.draw({ x: point[X], y: point[Y]}, { x: nextPoint[X], y: nextPoint[Y] }, false, { options: {
                             brushSize: this.props.brushSize
@@ -195,6 +201,7 @@ class DrawCanvas extends React.PureComponent {
                     onMouseDown={this.onMouseDown}
                     onMouseMove={this.onMouseMove}
                     onMouseUp={this.onMouseUp}
+                    onKeyDown={this.onKeyDown}
                 />
             </React.Fragment>
         );
