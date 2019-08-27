@@ -83,7 +83,7 @@ class DrawCanvas extends React.PureComponent {
     onMouseUp = (e) => {
         const newData = this.tool.onMouseUp(
             this.getCursorPosition(e),
-            (finish) => this.setState({ rectangleId: canvasHandler.uuid() })
+            () => this.setState({ rectangleId: canvasHandler.uuid() })
         );
         this.updateData(newData);
     }
@@ -91,7 +91,7 @@ class DrawCanvas extends React.PureComponent {
     updateData = (dataFromTool) => {
         const { polygonId, rectangleId } = this.state;
         const { tool } = this.props;
-        const key = tool === 'Line' ? tool : tool === 'Polygon' ? `Polygon_${polygonId}` : `Rectangle_${rectangleId}`;
+        const key = tool === 'Line' ? 'Line' : tool === 'Polygon' ? `Polygon_${polygonId}` : `Rectangle_${rectangleId}`;
 
         // TODO: Refactor, this code to a DRY version
         if (dataFromTool) {
@@ -162,7 +162,7 @@ class DrawCanvas extends React.PureComponent {
                 data[el] = [data[el][TOP_LEFT], data[el][BOTTOM_RIGHT]];
             }
             let elPoints = data[el];
-            if (el.startsWith('Line')) {
+            if (el.startsWith('Line') || el.startsWith('Arrang')) {
                 elPoints.forEach((point) => {
                     this.tool.draw({ x: point[START][X], y: point[START][Y] }, { x: point[END][X], y: point[END][Y] }, false, {
                         options: { brushSize: this.props.brushSize },

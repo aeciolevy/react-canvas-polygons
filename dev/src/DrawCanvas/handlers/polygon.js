@@ -52,7 +52,7 @@ polygon.fillGeometry = function fillGeometry (pathData) {
             path.lineTo(pathData[0][0], pathData[0][1]);
         }
     });
-    this.ctx.fillStyle = 'rgba(0, 255, 0, 0.1)';
+    this.ctx.fillStyle = 'rgba(255, 0, 0, 0.1)';
     this.ctx.fill(path);
 }
 

@@ -26,7 +26,7 @@ canvasHandler.uuid = () => {
 canvasHandler.pipe = (...fns) => x => fns.reduce((acc, curr) => curr(acc), x);
 
 canvasHandler.getTool = string => {
-    if (string.startsWith('Lin' || 'lin')){
+    if (string.startsWith('Lin') || string.startsWith('Arra')){
         return 'Line'
     }
     if (string.startsWith('Rect' || 'rect')){
