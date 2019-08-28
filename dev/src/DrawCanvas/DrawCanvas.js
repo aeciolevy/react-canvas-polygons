@@ -4,6 +4,7 @@ import Line from './handlers/line';
 import Polygon from './handlers/polygon';
 import Rectangle from './handlers/rectangle';
 import canvasHandler from './handlers/canvasHandler';
+import History from './handlers/history';
 
 const tools = {
     'Line': Line,
@@ -60,11 +61,12 @@ class DrawCanvas extends React.PureComponent {
     onMouseDown = (e) => {
         const { brushSize, color } = this.props;
         const { tool } = this.props;
-
+        const { polygonId, rectangleId } = this.state;
         if (tool !== 'Line') {
             this.createNewToolInitialData(tool);
         }
-
+        const key = tool === 'Line' ? 'Line' : tool === 'Polygon' ? `Polygon_${polygonId}` : `Rectangle_${rectangleId}`;
+        this.setState({ currentKey: key });
         this.tool.onMouseDown(this.getCursorPosition(e), { brushSize, color, tool });
     }
 
@@ -77,13 +79,13 @@ class DrawCanvas extends React.PureComponent {
     }
 
     onMouseMove = (e) => {
-        this.tool.onMouseMove(this.getCursorPosition(e), () => this.setState({ polygonId: canvasHandler.uuid() }));
+        this.tool.onMouseMove(this.getCursorPosition(e), () => this.setState({ polygonId: canvasHandler.uuid(), currentKey: null }));
     }
 
     onMouseUp = (e) => {
         const newData = this.tool.onMouseUp(
             this.getCursorPosition(e),
-            () => this.setState({ rectangleId: canvasHandler.uuid() })
+            () => this.setState({ rectangleId: canvasHandler.uuid(), currentKey: null })
         );
         this.updateData(newData);
     }
@@ -92,7 +94,6 @@ class DrawCanvas extends React.PureComponent {
         const { polygonId, rectangleId } = this.state;
         const { tool } = this.props;
         const key = tool === 'Line' ? 'Line' : tool === 'Polygon' ? `Polygon_${polygonId}` : `Rectangle_${rectangleId}`;
-
         // TODO: Refactor, this code to a DRY version
         if (dataFromTool) {
             const dataToUpdate = key.startsWith('Poly') || key.startsWith('Line') ?
@@ -128,26 +129,33 @@ class DrawCanvas extends React.PureComponent {
         });
     }
 
-    undo = () => {
-        if (this.props.canUndo) {
-            let tempCanvasData = [...this.state.canvasData];
-            tempCanvasData.pop();
-            this.setState({
-                data: { ...this.state.pastData },
-                canvasData: [...tempCanvasData]
-            }, () => {
-                this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-                this.state.canvasData.forEach(el => {
-                    const { tool } = el.options;
-                    this.tool = { ...this.tool, ...tools[tool] };
-                    this.tool.draw(el.start, el.end, false, { options: el.options});
-                });
-            });
+    isCtrlPressed = (event) => event.ctrlKey || event.metaKey;
+    isShiftPressed = (event) => event.shiftKey;
+
+    onKeyDown = (event) => {
+        console.log('key down triggered', event.key, event);
+        const isCtrl = this.isCtrlPressed(event);
+        if (isCtrl && event.which === 90) {
+            this.loadDraw(this.state.pastData, true);
+            this.setState({ data: this.state.pastData })
         }
     }
 
+    onKeyUp = (event) => {
+        if (event.key === 'Escape') {
+            // undo current drawing
+            if (this.state.currentKey) {
+                let newData = History.cancel(this.state.currentKey, this.state.data);
+                this.setState({ data: newData, currentKey: null }, () => {
+                    this.loadDraw(this.state.data, true);
+                    this.props.onCompleteDraw(this.state.data);
+                })
+            }
+        };
+    }
+
     // TODO: refactor this function to canvas handle
-    loadDraw = (data) => {
+    loadDraw = (data, byPassReset) => {
         const X = 0, Y = 1;
         const START = 0, END = 1;
         const TOP_LEFT = 0, BOTTOM_RIGHT = 2;
@@ -171,7 +179,6 @@ class DrawCanvas extends React.PureComponent {
             } else {
                 elPoints.forEach((point, index, array) => {
                     const nextPoint = el.startsWith('Rect') ? array[index + 1] : (array[index + 1] || array[0]);
-                if (el.startsWith('Rect')) console.log('nextpoint: ', nextPoint);
                     if (nextPoint) {
                         this.tool.draw({ x: point[X], y: point[Y]}, { x: nextPoint[X], y: nextPoint[Y] }, false, { options: {
                             brushSize: this.props.brushSize
@@ -183,8 +190,11 @@ class DrawCanvas extends React.PureComponent {
                 }
             }
         });
-        this.setDefaultTool();
-        this.setState({ data: {...this.state.data, ...data }});
+        this.tool.resetState();
+        if (!byPassReset) {
+            this.setDefaultTool();
+            this.setState({ data: {...this.state.data, ...data }});
+        }
     }
 
     render() {
@@ -202,6 +212,7 @@ class DrawCanvas extends React.PureComponent {
                     onMouseMove={this.onMouseMove}
                     onMouseUp={this.onMouseUp}
                     onKeyDown={this.onKeyDown}
+                    onKeyUp={this.onKeyUp}
                 />
             </React.Fragment>
         );
