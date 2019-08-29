@@ -25,7 +25,8 @@ const INITIAL_STATE = {
 class DrawCanvas extends React.PureComponent {
 
     state = {
-        pastData: INITIAL_STATE,
+        undoData: [],
+        redoData: [],
         data: INITIAL_STATE,
         canvasData: [],
         polygonId: canvasHandler.uuid(),
@@ -40,7 +41,6 @@ class DrawCanvas extends React.PureComponent {
     }
 
     componentDidUpdate(prevProps) {
-        console.log('props: ', prevProps, this.props)
         if (prevProps.tool !== this.props.tool) {
             this.tool = tools[this.props.tool];
             this.tool.ctx = this.ctx;
@@ -49,12 +49,6 @@ class DrawCanvas extends React.PureComponent {
         if (prevProps.imgSrc !== this.props.imgSrc){
             this.loadDraw(this.props.initialData);
         }
-    }
-
-    setDefaultTool =  () => {
-        this.tool = tools['Line'];
-        this.tool.ctx = this.ctx;
-        this.tool.resetState();
     }
 
     onMouseDown = (e) => {
@@ -85,6 +79,7 @@ class DrawCanvas extends React.PureComponent {
             {
                 this.setState({ polygonId: canvasHandler.uuid(), currentKey: null });
                 this.tool = null;
+                this.props.onFinishDraw();
             });
         }
     }
@@ -113,7 +108,7 @@ class DrawCanvas extends React.PureComponent {
                 [...this.state.data[key], dataFromTool.data] : [...this.state.data[key], ...dataFromTool.data];
 
             this.setState({
-                pastData: { ...this.state.data },
+                undoData: [...this.state.undoData, this.state.data],
                 data: {
                     ...this.state.data,
                     [key]: dataToUpdate,
@@ -146,12 +141,21 @@ class DrawCanvas extends React.PureComponent {
     isShiftPressed = (event) => event.shiftKey;
 
     onKeyDown = (event) => {
-        console.log('key down triggered', event.key, event);
         const isCtrl = this.isCtrlPressed(event);
+        const isShift = this.isShiftPressed(event);
         const Z = 90;
         if (isCtrl && event.which === Z) {
-            this.loadDraw(this.state.pastData, true);
-            this.setState({ data: this.state.pastData })
+            const modifiedUndo = this.state.undoData;
+            const oneStepBack = modifiedUndo.pop()
+            this.loadDraw(oneStepBack, true);
+            this.setState({ data: oneStepBack, undoData: modifiedUndo, redoData: [...this.state.redoData, this.state.data] });
+        }
+        if (isCtrl && isShift && event.which === Z) {
+            console.log('redo');
+            const modifiedRedo = this.state.redoData;
+            const oneStepForward = modifiedRedo.pop();
+            this.loadDraw(oneStepForward, true);
+            this.setState({ data: oneStepForward });
         }
     }
 
