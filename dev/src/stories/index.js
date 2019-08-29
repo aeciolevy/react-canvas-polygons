@@ -31,7 +31,8 @@ storiesOf('Canvas', module)
   tool="Line"
   imgSrc="https://ric-bucket.s3.amazonaws.com/device_5c05ee0cb669e165879e622a/sensorview.jpg"
   initialData={testData}
-  onCompleteDraw={(data) => console.log(data)}
+  onDataUpdate={(data) => console.log('on data update: ', data)}
+  onFinishDraw={() => console.log('Finish draw!!')}
 /> )
 .add('Render Canvas Brush Size', () => (
   <div>
@@ -45,7 +46,8 @@ storiesOf('Canvas', module)
         brushSize={Number(state.brush)}
         color={state.color}
         tool={state.tool}
-        onCompleteDraw={(data) => console.log(data)}
+        onDataUpdate={(data) => console.log('data updates: ', data)}
+        onFinishDraw={() => console.log('finish draw')}
         initialData={testData}
       />
     )} />

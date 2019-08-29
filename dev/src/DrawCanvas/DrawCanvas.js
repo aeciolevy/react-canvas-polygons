@@ -34,14 +34,13 @@ class DrawCanvas extends React.PureComponent {
 
     componentDidMount() {
         this.ctx = this.canvas.getContext('2d');
-        this.tool = tools[this.props.tool] || tools['Line'];
-        this.tool.ctx = this.ctx;
         if (this.props.initialData && this.props.imgSrc) {
             this.loadDraw(this.props.initialData);
         }
     }
 
     componentDidUpdate(prevProps) {
+        console.log('props: ', prevProps, this.props)
         if (prevProps.tool !== this.props.tool) {
             this.tool = tools[this.props.tool];
             this.tool.ctx = this.ctx;
@@ -59,15 +58,17 @@ class DrawCanvas extends React.PureComponent {
     }
 
     onMouseDown = (e) => {
-        const { brushSize, color } = this.props;
-        const { tool } = this.props;
-        const { polygonId, rectangleId } = this.state;
-        if (tool !== 'Line') {
-            this.createNewToolInitialData(tool);
+        if (this.tool) {
+            const { brushSize, color } = this.props;
+            const { tool } = this.props;
+            const { polygonId, rectangleId } = this.state;
+            if (tool !== 'Line') {
+                this.createNewToolInitialData(tool);
+            }
+            const key = tool === 'Line' ? 'Line' : tool === 'Polygon' ? `Polygon_${polygonId}` : `Rectangle_${rectangleId}`;
+            this.setState({ currentKey: key });
+            this.tool.onMouseDown(this.getCursorPosition(e), { brushSize, color, tool });
         }
-        const key = tool === 'Line' ? 'Line' : tool === 'Polygon' ? `Polygon_${polygonId}` : `Rectangle_${rectangleId}`;
-        this.setState({ currentKey: key });
-        this.tool.onMouseDown(this.getCursorPosition(e), { brushSize, color, tool });
     }
 
     createNewToolInitialData = (tool) => {
@@ -79,15 +80,27 @@ class DrawCanvas extends React.PureComponent {
     }
 
     onMouseMove = (e) => {
-        this.tool.onMouseMove(this.getCursorPosition(e), () => this.setState({ polygonId: canvasHandler.uuid(), currentKey: null }));
+        if (this.tool) {
+            this.tool.onMouseMove(this.getCursorPosition(e), () =>
+            {
+                this.setState({ polygonId: canvasHandler.uuid(), currentKey: null });
+                this.tool = null;
+            });
+        }
     }
 
     onMouseUp = (e) => {
-        const newData = this.tool.onMouseUp(
-            this.getCursorPosition(e),
-            () => this.setState({ rectangleId: canvasHandler.uuid(), currentKey: null })
-        );
-        this.updateData(newData);
+        if (this.tool) {
+            const newData = this.tool.onMouseUp(
+                this.getCursorPosition(e),
+                () => {
+                    this.setState({ rectangleId: canvasHandler.uuid(), currentKey: null });
+                    this.tool = null;
+                    this.props.onFinishDraw && this.props.onFinishDraw();
+                }
+            );
+            this.updateData(newData);
+        }
     }
 
     updateData = (dataFromTool) => {
@@ -107,7 +120,7 @@ class DrawCanvas extends React.PureComponent {
                 },
                 canvasData: [...this.state.canvasData, dataFromTool.canvas],
             }, () => {
-                this.props.onCompleteDraw && this.props.onCompleteDraw(this.state.data);
+                this.props.onDataUpdate && this.props.onDataUpdate(this.state.data);
             });
         }
     }
@@ -125,7 +138,7 @@ class DrawCanvas extends React.PureComponent {
     cleanCanvas = () => {
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
         this.setState({ data: INITIAL_STATE, canvasData: [] }, () => {
-            this.props.onCompleteDraw && this.props.onCompleteDraw(this.state.data);
+            this.props.onDataUpdate && this.props.onDataUpdate(this.state.data);
         });
     }
 
@@ -135,7 +148,8 @@ class DrawCanvas extends React.PureComponent {
     onKeyDown = (event) => {
         console.log('key down triggered', event.key, event);
         const isCtrl = this.isCtrlPressed(event);
-        if (isCtrl && event.which === 90) {
+        const Z = 90;
+        if (isCtrl && event.which === Z) {
             this.loadDraw(this.state.pastData, true);
             this.setState({ data: this.state.pastData })
         }
@@ -148,8 +162,9 @@ class DrawCanvas extends React.PureComponent {
                 let newData = History.cancel(this.state.currentKey, this.state.data);
                 this.setState({ data: newData, currentKey: null }, () => {
                     this.loadDraw(this.state.data, true);
-                    this.props.onCompleteDraw(this.state.data);
-                })
+                    this.props.onDataUpdate(this.state.data);
+                    this.tool = null;
+                });
             }
         };
     }
@@ -191,8 +206,10 @@ class DrawCanvas extends React.PureComponent {
             }
         });
         this.tool.resetState();
+        this.tool = null;
+        this.props.onFinishDraw();
         if (!byPassReset) {
-            this.setDefaultTool();
+            // this.setDefaultTool();
             this.setState({ data: {...this.state.data, ...data }});
         }
     }
@@ -254,9 +271,14 @@ DrawCanvas.propTypes = {
     initialData: type.object,
     /**
      * This is a callback function that we be called
-     * everytime a shape finish to draw
+     * everytime the data updates
      */
-    onCompleteDraw: type.func,
+    onDataUpdate: type.func,
+    /**
+     * This is a callback function what we be triggered
+     * when the shape is drawn
+     */
+    onFinishDraw: type.func
 }
 
 DrawCanvas.defaultProps = {
@@ -264,7 +286,6 @@ DrawCanvas.defaultProps = {
     height: 300,
     brushSize: 2,
     color: '#000000',
-    tool: 'Line',
     canUndo: false,
 }
 

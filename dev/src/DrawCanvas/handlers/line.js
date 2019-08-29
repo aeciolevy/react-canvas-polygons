@@ -16,12 +16,13 @@ line.onMouseMove = function onMouseMove(position) {
     this.draw(this.state.start, position);
 }
 
-line.onMouseUp = function onMouseUp(position) {
+line.onMouseUp = function onMouseUp(position, callback) {
     if (!this.state) return;
     const data = [[this.state.start.x, this.state.start.y], [position.x, position.y]];
     const start = this.state.start;
     const options = this.state.options;
     this.resetState();
+    callback();
     return {
         data: data,
         canvas: {
