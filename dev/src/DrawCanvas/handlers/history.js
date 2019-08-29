@@ -28,7 +28,17 @@ history.cancel = (currentProperty, data) => {
     return newData;
 }
 
-
+history.filterPolygon = (data) => {
+    return Object.keys(data).reduce((acc, curr) => {
+        if (curr.startsWith('Poly')) {
+            if (curr.length < 3) {
+                return acc;
+            }
+        }
+        acc[curr] = data[curr];
+        return acc;
+    }, {});
+}
 
 // history.redo_list = [];
 // history.undo_list = [];

@@ -146,12 +146,13 @@ class DrawCanvas extends React.PureComponent {
         const Z = 90;
         if (isCtrl && event.which === Z) {
             const modifiedUndo = this.state.undoData;
-            const oneStepBack = modifiedUndo.pop()
+            const oneStepBack = History.filterPolygon(modifiedUndo.pop());
+            // TODO: add a function which check polygon with less than 3 points
+            // and delete it
             this.loadDraw(oneStepBack, true);
             this.setState({ data: oneStepBack, undoData: modifiedUndo, redoData: [...this.state.redoData, this.state.data] });
         }
         if (isCtrl && isShift && event.which === Z) {
-            console.log('redo');
             const modifiedRedo = this.state.redoData;
             const oneStepForward = modifiedRedo.pop();
             this.loadDraw(oneStepForward, true);
