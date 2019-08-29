@@ -210,7 +210,7 @@ class DrawCanvas extends React.PureComponent {
                 }
             }
         });
-        this.tool.resetState();
+        this.tool && this.tool.resetState();
         this.tool = null;
         this.props.onFinishDraw && this.props.onFinishDraw();
         if (!byPassReset) {
