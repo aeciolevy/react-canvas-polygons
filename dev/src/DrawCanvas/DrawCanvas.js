@@ -79,7 +79,7 @@ class DrawCanvas extends React.PureComponent {
             {
                 this.setState({ polygonId: canvasHandler.uuid(), currentKey: null });
                 this.tool = null;
-                this.props.onFinishDraw();
+                this.props.onFinishDraw && this.props.onFinishDraw();
             });
         }
     }
@@ -212,7 +212,7 @@ class DrawCanvas extends React.PureComponent {
         });
         this.tool.resetState();
         this.tool = null;
-        this.props.onFinishDraw();
+        this.props.onFinishDraw && this.props.onFinishDraw();
         if (!byPassReset) {
             // this.setDefaultTool();
             this.setState({ data: {...this.state.data, ...data }});
