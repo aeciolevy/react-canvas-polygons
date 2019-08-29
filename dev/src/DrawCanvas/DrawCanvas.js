@@ -144,11 +144,11 @@ class DrawCanvas extends React.PureComponent {
         const isCtrl = this.isCtrlPressed(event);
         const isShift = this.isShiftPressed(event);
         const Z = 90;
+        // TODO: treat the case where polygon is less than 3 points
+        // we must not render it, but neither redo should have its last state
         if (isCtrl && event.which === Z) {
             const modifiedUndo = this.state.undoData;
             const oneStepBack = History.filterPolygon(modifiedUndo.pop());
-            // TODO: add a function which check polygon with less than 3 points
-            // and delete it
             this.loadDraw(oneStepBack, true);
             this.setState({ data: oneStepBack, undoData: modifiedUndo, redoData: [...this.state.redoData, this.state.data] });
         }
