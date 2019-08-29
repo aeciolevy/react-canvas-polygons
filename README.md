@@ -8,6 +8,9 @@ This component was designed to draw fences which are used by computer vision app
 
 The points saved are relative to the canvas size. It follows the browser coordinate system (0, 0) on the top left.
 
+## Warning: On version 1.1.10 there is a breaking change. The onCompleteDraw was renamed to onDataUpdate and
+a new callback function was added onFinishDraw.
+
 ## Installation
 
 ```
@@ -161,7 +164,3 @@ This will clean the canvas and reset the component state.
 }
 
 ```
-
-
-## TODO
-- We should track what we are drawing so it would make easier to cancel or undo
