@@ -42,9 +42,11 @@ class DrawCanvas extends React.PureComponent {
 
     componentDidUpdate(prevProps) {
         if (prevProps.tool !== this.props.tool) {
-            this.tool = tools[this.props.tool];
-            this.tool.ctx = this.ctx;
-            this.tool.resetState();
+            if (this.props.tool) {
+                this.tool = tools[this.props.tool];
+                this.tool.ctx = this.ctx;
+                this.tool.resetState();
+            }
         }
         if (prevProps.imgSrc !== this.props.imgSrc){
             this.loadDraw(this.props.initialData);
