@@ -176,6 +176,10 @@ class DrawCanvas extends React.PureComponent {
         };
     }
 
+    forceLoadDraw = (data) => {
+        this.loadDraw(data);
+    }
+
     // TODO: refactor this function to canvas handle
     loadDraw = (data, byPassReset) => {
         const X = 0, Y = 1;
