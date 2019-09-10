@@ -197,6 +197,7 @@ class DrawCanvas extends React.PureComponent {
                     this.tool.draw({ x: point[START][X], y: point[START][Y] }, { x: point[END][X], y: point[END][Y] }, false, {
                         options: { brushSize: this.props.brushSize },
                     });
+                    this.tool.drawCrossDirection([[point[START][X], point[START][Y]], [point[END][X], point[END][Y]]], 20);
                 });
             } else {
                 elPoints.forEach((point, index, array) => {
