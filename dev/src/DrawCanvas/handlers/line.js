@@ -21,7 +21,7 @@ line.onMouseUp = function onMouseUp(position, callback) {
     const data = [[this.state.start.x, this.state.start.y], [position.x, position.y]];
     const start = this.state.start;
     const options = this.state.options;
-    this.drawCrossDirection(data, 20);
+    this.drawCrossDirection(data, 10);
     this.resetState();
     callback();
     return {
@@ -48,16 +48,16 @@ function getCrossPath(point, size, direction) {
     return path;
 }
 
-/* Xt = (X1+X2)/2 - M * sign(Y2-Y1)
-Yt = (X1+X2)/2 + M * sign(X2-X1) */
+/* Xt = (X1+X2)/2 + M * sign(Y2-Y1)
+Yt = (Y1+Y2)/2 - M * sign(X2-X1) */
 line.drawCrossDirection = function (points, pixelDistance) {
     const x1 = points[0][0];
     const x2 = points[1][0];
     const y1 = points[0][1];
     const y2 = points[1][1];
 
-    const xCoord = ((x1 + x2) / 2) - (pixelDistance * Math.sin(y2 - y1));
-    const yCoord = ((y1 + y2) / 2) + (pixelDistance * Math.sin(x2 - x1));
+    const xCoord = ((x1 + x2) / 2) + (pixelDistance * Math.sign(y2 - y1));
+    const yCoord = ((y1 + y2) / 2) - (pixelDistance * Math.sign(x2 - x1));
 
     const crossPath = getCrossPath({x: xCoord, y: yCoord }, 6);
     this.ctx.strokeStyle = '#1f52ed';
