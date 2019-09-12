@@ -68,7 +68,7 @@ line.drawCrossDirection = function (points, pixelDistance) {
     const yCoord = ((y1 + y2) / 2) - (pixelDistance * Math.sign(x2 - x1));
 
     const crossPath = getCrossPath({x: xCoord, y: yCoord }, 6);
-    this.ctx.strokeStyle = '#1f52ed';
+    this.ctx.strokeStyle = '#ff0000';
     this.ctx.stroke(crossPath);
     this.ctx.strokeStyle = '#000';
 }
