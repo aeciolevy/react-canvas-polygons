@@ -4,7 +4,7 @@
   "description": "Draw lines and polygons with canvas. Save and load path to canvas.",
   "main": "build/index.js",
   "scripts": {
-    "dev": "watch 'npm run build' dev/src/DrawCanvas",
+    "dev": "cd dev && npm run storybook",
     "build": "npx babel dev/src/DrawCanvas -d build --presets=@babel/preset-env,@babel/preset-react,babel-preset-minify --plugins=@babel/plugin-proposal-class-properties",
     "prepublishOnly": "npm run build",
     "test": "echo \"Error: no test specified\" && exit 1"

@@ -221,7 +221,6 @@ class DrawCanvas extends React.PureComponent {
         this.tool = null;
         this.props.onFinishDraw && this.props.onFinishDraw();
         if (!byPassReset) {
-            // this.setDefaultTool();
             this.setState({ data: { ...this.state.data, ...data } }, () => this.props.onDataUpdate(this.state.data));
         }
     }

@@ -8,6 +8,9 @@ line.name = 'Line';
 line.onMouseDown = function onMouseDown(start, options) {
     this.ctx.strokeStyle = options ? options.color : "#000";
     this.setInitSettings({ start, options });
+    if (!this.state.data) {
+        this.state.data = [];
+    }
 }
 
 line.onMouseMove = function onMouseMove(position) {
@@ -16,22 +19,27 @@ line.onMouseMove = function onMouseMove(position) {
     this.draw(this.state.start, position);
 }
 
+// see #3
+// Change mechanism to draw line
 line.onMouseUp = function onMouseUp(position, callback) {
     if (!this.state) return;
-    const data = [[this.state.start.x, this.state.start.y], [position.x, position.y]];
-    const start = this.state.start;
-    const options = this.state.options;
-    this.drawCrossDirection(data, 10);
-    this.resetState();
-    callback();
-    return {
-        data: data,
-        canvas: {
-            start,
-            end: position,
-            options
-        }
-    };
+    this.state.data.push([position.x, position.y]);
+    if (this.state.data.length > 1) {
+        const data = this.state.data;
+        const start = this.state.start;
+        const options = this.state.options;
+        this.drawCrossDirection(this.state.data, 10);
+        this.resetState();
+        callback();
+        return {
+            data: data,
+            canvas: {
+                start,
+                end: position,
+                options
+            }
+        };
+    }
 }
 
 function getCrossPath(point, size, direction) {
