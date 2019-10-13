@@ -31,7 +31,7 @@ line.onMouseUp = function onMouseUp(position, callback) {
     // the first mouse up
     this.state.data.push([position.x, position.y]);
     if (this.state.data.length > 1) {
-        const data = [this.state.firstMouseDown, position];
+        const data = [[this.state.firstMouseDown.x, this.state.firstMouseDown.y], [position.x, position.y]];
         const start = this.state.start;
         const options = this.state.options;
         this.drawCrossDirection(this.state.data, 10);
