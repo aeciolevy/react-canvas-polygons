@@ -9,6 +9,10 @@ line.onMouseDown = function onMouseDown(start, options) {
     this.ctx.strokeStyle = options ? options.color : "#000";
     this.setInitSettings({ start, options });
     if (!this.state.data) {
+        // get the start point on mouse down
+        // TODO: it is not the best solution
+        // revisit later
+        this.state.firstMouseDown = start;
         this.state.data = [];
     }
 }
@@ -23,9 +27,11 @@ line.onMouseMove = function onMouseMove(position) {
 // Change mechanism to draw line
 line.onMouseUp = function onMouseUp(position, callback) {
     if (!this.state) return;
+    // NOTE: This state data is just to avoid draw in
+    // the first mouse up
     this.state.data.push([position.x, position.y]);
     if (this.state.data.length > 1) {
-        const data = this.state.data;
+        const data = [this.state.firstMouseDown, position];
         const start = this.state.start;
         const options = this.state.options;
         this.drawCrossDirection(this.state.data, 10);
