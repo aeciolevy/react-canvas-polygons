@@ -193,9 +193,10 @@ class DrawCanvas extends React.PureComponent {
             this.tool = tools[shape];
             this.tool.ctx = this.ctx;
             // avoid mutate initial data;
-            let newData;
+            let newData = {};
             if (el.startsWith('Rectan')) {
-                newData[el] = [data[el][TOP_LEFT], data[el][BOTTOM_RIGHT]];
+                let dataIndex = data[el][BOTTOM_RIGHT] ? BOTTOM_RIGHT : 1;
+                newData[el] = [data[el][TOP_LEFT], data[el][dataIndex]];
             }
             let elPoints = el.startsWith('Rectan') ? newData[el] : data[el];
             if (el.startsWith('Line') || el.startsWith('Arrang')) {
