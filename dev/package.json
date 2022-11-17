@@ -6,7 +6,7 @@
     "image-size": "^0.6.3",
     "react": "^16.7.0",
     "react-dom": "^16.7.0",
-    "react-scripts": "2.1.2"
+    "react-scripts": "5.0.1"
   },
   "scripts": {
     "start": "react-scripts start",
@@ -30,7 +30,7 @@
     "@storybook/addon-actions": "^4.1.4",
     "@storybook/addon-links": "^4.1.4",
     "@storybook/addons": "^4.1.4",
-    "@storybook/react": "^4.1.4",
+    "@storybook/react": "^6.5.13",
     "babel-loader": "^8.0.4"
   }
 }
